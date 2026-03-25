@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdCraft Pro — Meta Ad Copy Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f4f8;--s1:#ffffff;--s2:#f0f0f6;--s3:#e8e8f2;--s4:#d4d4e4;
+  --b1:rgba(0,0,0,0.07);--b2:rgba(0,0,0,0.12);--b3:rgba(0,0,0,0.18);
+  --t1:#1a1830;--t2:#4a4868;--t3:#8886a8;--t4:#c4c2dc;
+  --p:#6366f1;--p2:#5254cc;--pd:rgba(99,102,241,0.1);--pg:rgba(99,102,241,0.2);
+  --ok:#10b981;--warn:#f59e0b;--err:#ef4444;--info:#3b82f6;
+  --meta:#1877f2;
+  --r:10px;--r2:6px;--r3:16px;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --veil-bg:rgba(240,240,248,0.88);
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#07070c;--s1:#0f0f18;--s2:#161622;--s3:#1c1c2e;--s4:#22223a;
+  --b1:rgba(255,255,255,0.055);--b2:rgba(255,255,255,0.1);--b3:rgba(255,255,255,0.16);
+  --t1:#f2f0fa;--t2:#9896b4;--t3:#585672;--t4:#363452;
+  --p2:#818cf8;--pd:rgba(99,102,241,0.14);--pg:rgba(99,102,241,0.28);
+  --veil-bg:rgba(7,7,12,0.88);
+}}
+[data-theme="dark"]{
+  --bg:#07070c;--s1:#0f0f18;--s2:#161622;--s3:#1c1c2e;--s4:#22223a;
+  --b1:rgba(255,255,255,0.055);--b2:rgba(255,255,255,0.1);--b3:rgba(255,255,255,0.16);
+  --t1:#f2f0fa;--t2:#9896b4;--t3:#585672;--t4:#363452;
+  --p2:#818cf8;--pd:rgba(99,102,241,0.14);--pg:rgba(99,102,241,0.28);
+  --veil-bg:rgba(7,7,12,0.88);
+}
+[data-theme="light"]{
+  --bg:#f4f4f8;--s1:#ffffff;--s2:#f0f0f6;--s3:#e8e8f2;--s4:#d4d4e4;
+  --b1:rgba(0,0,0,0.07);--b2:rgba(0,0,0,0.12);--b3:rgba(0,0,0,0.18);
+  --t1:#1a1830;--t2:#4a4868;--t3:#8886a8;--t4:#c4c2dc;
+  --p2:#5254cc;--pd:rgba(99,102,241,0.1);--pg:rgba(99,102,241,0.2);
+  --veil-bg:rgba(240,240,248,0.88);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--t1);font-family:'Manrope',sans-serif;font-size:14px;line-height:1.55;overflow:hidden;}
+.shell{display:grid;grid-template-rows:48px 1fr;grid-template-columns:344px 1fr;height:100vh;}
+/* TOPBAR */
+.topbar{grid-column:1/-1;background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:relative;z-index:50;}
+.logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;letter-spacing:-0.4px;display:flex;align-items:center;gap:7px;}
+.logo-mark{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--p),var(--p2));display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 0 12px rgba(99,102,241,0.4);}
+.logo em{color:var(--p2);font-style:normal;}
+.topbar-mid{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;}
+.ai-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid var(--b2);background:var(--s2);font-size:11px;font-weight:600;color:var(--t2);cursor:pointer;transition:all 0.15s var(--ease);}
+.ai-pill:hover{border-color:var(--p);color:var(--p2);}
+.ai-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 5px rgba(16,185,129,0.5);}
+.topbar-right{display:flex;align-items:center;gap:6px;}
+.ibtn{width:30px;height:30px;border-radius:var(--r2);border:1px solid var(--b1);background:transparent;color:var(--t3);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s var(--ease);}
+.ibtn:hover{border-color:var(--b2);color:var(--t1);background:var(--s2);}
+/* PANELS */
+.lpanel{grid-row:2;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;}
+.rpanel{grid-row:2;overflow-y:auto;background:var(--bg);display:flex;flex-direction:column;}
+/* LEFT */
+.lp-top{padding:12px 14px 10px;border-bottom:1px solid var(--b1);flex-shrink:0;}
+.lp-btm{padding:10px 14px;border-top:1px solid var(--b1);flex-shrink:0;background:var(--s1);}
+.lp-scroll{flex:1;overflow-y:auto;padding:0 14px 6px;scrollbar-width:thin;scrollbar-color:var(--s4) transparent;}
+.lp-scroll::-webkit-scrollbar{width:3px;}
+.lp-scroll::-webkit-scrollbar-thumb{background:var(--s4);border-radius:2px;}
+/* Template bar */
+.tbar{display:flex;gap:5px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+.tbar::-webkit-scrollbar{display:none;}
+.tchip{padding:3px 9px;border-radius:20px;border:1px solid var(--b1);background:var(--s2);color:var(--t3);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s var(--ease);flex-shrink:0;}
+.tchip:hover{border-color:var(--p);color:var(--p2);background:var(--pd);}
+.tchip.save{border-color:rgba(16,185,129,0.3);color:var(--ok);}
+.tchip.save:hover{background:rgba(16,185,129,0.1);}
+/* Section */
+.fsec{padding:12px 0 0;}
+.fsec-title{font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--t3);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.fsec-title span{flex:1;height:1px;background:var(--b1);}
+/* Fields */
+.field{margin-bottom:9px;position:relative;}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--t3);margin-bottom:4px;}
+.field label em{color:var(--err);font-style:normal;margin-left:2px;}
+input[type=text],input[type=url],input[type=password],textarea,select{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);padding:7px 10px;color:var(--t1);font-family:'Manrope',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s var(--ease),box-shadow 0.15s var(--ease);resize:vertical;}
+input::placeholder,textarea::placeholder{color:var(--t4);}
+input:focus,textarea:focus,select:focus{border-color:rgba(99,102,241,0.5);box-shadow:0 0 0 3px var(--pd);background:var(--s3);}
+select option{background:var(--s3);}
+textarea{min-height:72px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.url-wrap{position:relative;}
+.url-wrap input{padding-right:72px;}
+.prefill-btn{position:absolute;right:5px;top:50%;transform:translateY(-50%);padding:3px 7px;border-radius:4px;background:var(--pd);border:1px solid rgba(99,102,241,0.3);color:var(--p2);font-size:10px;font-weight:700;cursor:pointer;transition:all 0.15s var(--ease);}
+.prefill-btn:hover{background:var(--p);color:white;}
+.prefill-btn:disabled{opacity:0.4;pointer-events:none;}
+/* Tone builder */
+.tone-builder{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:9px;}
+.tb-head{padding:7px 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b1);font-size:11px;font-weight:600;color:var(--t2);}
+.tb-slots{padding:9px 11px;display:flex;flex-direction:column;gap:5px;}
+.tslot{display:flex;align-items:center;gap:7px;}
+.snum{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.s0{background:rgba(99,102,241,0.2);color:#818cf8;}
+.s1{background:rgba(16,185,129,0.15);color:#34d399;}
+.s2{background:rgba(245,158,11,0.15);color:#fbbf24;}
+.s3{background:rgba(239,68,68,0.15);color:#f87171;}
+.s4b{background:rgba(59,130,246,0.15);color:#60a5fa;}
+.s5{background:rgba(168,85,247,0.15);color:#c084fc;}
+.tslot select{flex:1;padding:5px 7px;font-size:12px;}
+/* Gen button */
+.gen-btn{width:100%;padding:10px 14px;border-radius:var(--r);border:none;background:linear-gradient(135deg,var(--p),#818cf8);color:white;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s var(--ease);display:flex;align-items:center;justify-content:center;gap:7px;position:relative;overflow:hidden;}
+.gen-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 22px rgba(99,102,241,0.35);}
+.gen-btn:active:not(:disabled){transform:translateY(0);}
+.gen-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.gsp{display:none;width:15px;height:15px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;}
+.gen-btn.busy .gtxt{display:none;}
+.gen-btn.busy .gsp{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* RIGHT */
+.rtbar{padding:10px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;background:var(--s1);position:sticky;top:0;z-index:10;}
+.rtbar-l{display:flex;align-items:center;gap:8px;}
+.ol{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;}
+.vbadge{padding:2px 8px;border-radius:20px;background:var(--pd);border:1px solid rgba(99,102,241,0.25);font-size:11px;font-weight:600;color:var(--p2);}
+.rtbar-r{display:flex;align-items:center;gap:5px;}
+.tbar-btn{padding:5px 11px;border-radius:var(--r2);border:1px solid var(--b1);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all 0.15s var(--ease);font-family:'Manrope',sans-serif;}
+.tbar-btn:hover{border-color:var(--b2);color:var(--t1);background:var(--s2);}
+.tbar-btn.prim{background:var(--pd);border-color:rgba(99,102,241,0.3);color:var(--p2);}
+.tbar-btn.prim:hover{background:var(--p);color:white;border-color:var(--p);}
+.vtog{display:flex;background:var(--s2);border-radius:var(--r2);border:1px solid var(--b1);overflow:hidden;}
+.vt{padding:4px 9px;font-size:11px;font-weight:600;border:none;background:transparent;color:var(--t3);cursor:pointer;transition:all 0.15s var(--ease);font-family:'Manrope',sans-serif;}
+.vt.on{background:var(--s3);color:var(--t1);}
+/* EMPTY */
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;}
+.empty-ico{font-size:36px;margin-bottom:14px;opacity:0.3;}
+.empty-h{font-family:'Bricolage Grotesque',sans-serif;font-size:19px;font-weight:700;color:var(--t2);margin-bottom:7px;}
+.empty-p{font-size:13px;color:var(--t3);max-width:300px;line-height:1.6;}
+.cklist{margin-top:20px;display:flex;flex-direction:column;gap:5px;text-align:left;max-width:260px;width:100%;}
+.cki{display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:var(--r2);background:var(--s1);border:1px solid var(--b1);font-size:12px;color:var(--t3);}
+.cki.done{color:var(--t2);border-color:rgba(16,185,129,0.2);}
+.ckd{width:7px;height:7px;border-radius:50%;background:var(--t4);flex-shrink:0;}
+/* OUTPUT */
+.ozone{padding:14px 18px;flex:1;}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;}
+.dlist{display:flex;flex-direction:column;gap:14px;}
+/* Variant card */
+.vc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);overflow:hidden;transition:border-color 0.15s var(--ease);animation:sIn 0.28s var(--ease) both;}
+@keyframes sIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.vc:hover{border-color:var(--b2);}
+.vc::before{content:'';display:block;height:2px;}
+.vc.c0::before{background:linear-gradient(90deg,#6366f1,#818cf8);}
+.vc.c1::before{background:linear-gradient(90deg,#10b981,#34d399);}
+.vc.c2::before{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+.vc.c3::before{background:linear-gradient(90deg,#ef4444,#f87171);}
+.vc.c4::before{background:linear-gradient(90deg,#3b82f6,#60a5fa);}
+.vc.c5::before{background:linear-gradient(90deg,#a855f7,#c084fc);}
+.vc-head{padding:11px 14px 9px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.vnum{width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:1px;}
+.vinfo{flex:1;min-width:0;}
+.vtname{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vstrat{font-size:11.5px;color:var(--t2);margin-top:2px;line-height:1.4;}
+.vact{display:flex;gap:4px;flex-shrink:0;}
+.abtn{padding:3px 8px;border-radius:4px;border:1px solid var(--b1);background:transparent;color:var(--t3);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s var(--ease);font-family:'Manrope',sans-serif;white-space:nowrap;}
+.abtn:hover{border-color:var(--b2);color:var(--t1);background:var(--s2);}
+.abtn.done{border-color:rgba(16,185,129,0.4);color:var(--ok);}
+/* Meta fields — ALWAYS visible, no expand needed */
+.mfs{padding:0 14px 12px;display:flex;flex-direction:column;gap:7px;}
+.mf{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);overflow:hidden;transition:border-color 0.15s var(--ease);}
+.mf:hover{border-color:var(--b2);}
+.mf-hd{display:flex;align-items:center;justify-content:space-between;padding:5px 9px 4px;border-bottom:1px solid var(--b1);}
+.mf-lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);display:flex;align-items:center;gap:4px;}
+.lbl-dot{width:5px;height:5px;border-radius:50%;}
+.mf-right{display:flex;align-items:center;gap:5px;}
+.cbar-w{width:48px;height:3px;background:var(--s4);border-radius:2px;overflow:hidden;}
+.cbar{height:100%;border-radius:2px;transition:width 0.3s,background-color 0.3s;}
+.clbl{font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;min-width:42px;text-align:right;}
+.mf-cp{width:21px;height:21px;border-radius:4px;border:1px solid var(--b1);background:transparent;color:var(--t3);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s var(--ease);}
+.mf-cp:hover{border-color:var(--p);color:var(--p2);background:var(--pd);}
+.mf-cp.done{border-color:rgba(16,185,129,0.4);color:var(--ok);}
+.mf-body{padding:7px 9px;font-size:13px;line-height:1.65;color:var(--t1);white-space:pre-wrap;word-break:break-word;}
+.mf.hl .mf-body{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:600;line-height:1.3;}
+.cta-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:6px;background:var(--meta);color:white;font-size:12px;font-weight:700;}
+/* Why it works */
+.why{margin:0 14px 12px;padding:7px 10px;background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);border-radius:var(--r2);font-size:12px;color:var(--p2);line-height:1.5;}
+.why-lbl{font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--p);margin-bottom:3px;}
+/* Card footer */
+.vc-ft{padding:9px 14px;border-top:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.01);gap:7px;}
+.srow{display:flex;gap:4px;flex-wrap:wrap;}
+.sp{padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;}
+.sp-ok{background:rgba(16,185,129,0.1);color:#34d399;}
+.sp-w{background:rgba(245,158,11,0.1);color:#fbbf24;}
+.sp-e{background:rgba(239,68,68,0.1);color:#f87171;}
+.sp-i{background:rgba(99,102,241,0.1);color:#818cf8;}
+/* Copy for Meta button */
+.meta-cp-btn{padding:5px 12px;border-radius:var(--r2);border:1px solid rgba(24,119,242,0.3);background:rgba(24,119,242,0.08);color:#60a5fa;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s var(--ease);font-family:'Manrope',sans-serif;display:flex;align-items:center;gap:5px;}
+.meta-cp-btn:hover{background:var(--meta);color:white;border-color:var(--meta);}
+.meta-cp-btn.done{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3);color:var(--ok);}
+/* LOADING */
+.veil{position:fixed;inset:0;z-index:999;background:var(--veil-bg);backdrop-filter:blur(12px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.veil.on{display:flex;animation:fi 0.2s var(--ease);}
+@keyframes fi{from{opacity:0;}to{opacity:1;}}
+.lring{width:52px;height:52px;border-radius:50%;border:2px solid rgba(99,102,241,0.2);border-top-color:var(--p2);animation:spin 0.9s linear infinite;}
+.lt{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;}
+.ls{font-size:12.5px;color:var(--t2);max-width:260px;text-align:center;line-height:1.5;}
+.lpw{width:190px;height:2px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.lp{height:100%;background:linear-gradient(90deg,var(--p),var(--p2));border-radius:2px;width:0;transition:width 0.5s var(--ease);}
+/* OVERLAY / MODAL */
+.ov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;}
+.ov.open{display:flex;animation:fi 0.18s var(--ease);}
+.modal{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r3);width:100%;max-width:420px;max-height:85vh;overflow-y:auto;animation:scIn 0.2s var(--ease);}
+@keyframes scIn{from{transform:scale(0.95);opacity:0;}to{transform:scale(1);opacity:1;}}
+.mhd{padding:14px 18px 12px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;}
+.mtitle{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;}
+.mx{width:26px;height:26px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);color:var(--t2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s var(--ease);}
+.mx:hover{background:var(--s3);color:var(--t1);}
+.mbody{padding:16px 18px 18px;}
+.ai-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px;}
+.aic{padding:11px 7px;border-radius:var(--r);border:1.5px solid var(--b1);background:var(--s2);cursor:pointer;text-align:center;transition:all 0.15s var(--ease);position:relative;}
+.aic:hover{border-color:var(--b2);background:var(--s3);}
+.aic.sel{border-color:var(--p);background:var(--pd);}
+.aic.sel::after{content:'✓';position:absolute;top:4px;right:6px;font-size:9px;color:var(--p2);}
+.ai-ic{font-size:20px;margin-bottom:4px;}
+.ai-nm{font-size:12px;font-weight:700;color:var(--t2);}
+.aic.sel .ai-nm{color:var(--p2);}
+.ai-sb{font-size:10px;color:var(--t3);margin-top:1px;}
+.kf{position:relative;}
+.kf input{padding-right:34px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.keye{position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--t3);cursor:pointer;font-size:13px;}
+.keye:hover{color:var(--t1);}
+/* History drawer */
+.hdrawer-ov{position:fixed;inset:0;z-index:200;display:none;}
+.hdrawer-ov.open{display:block;}
+.hbg{position:absolute;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);}
+.hdrawer{position:absolute;right:0;top:0;bottom:0;width:310px;background:var(--s1);border-left:1px solid var(--b2);display:flex;flex-direction:column;animation:slR 0.25s var(--ease);}
+@keyframes slR{from{transform:translateX(100%);}to{transform:translateX(0);}}
+.drhd{padding:13px 14px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;}
+.drbd{flex:1;overflow-y:auto;padding:10px;}
+.hi{padding:9px 11px;border-radius:var(--r);background:var(--s2);border:1px solid var(--b1);margin-bottom:5px;cursor:pointer;transition:all 0.15s var(--ease);}
+.hi:hover{border-color:var(--p);background:var(--pd);}
+.hn{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hm{font-size:11px;color:var(--t3);margin-top:2px;}
+.hemp{text-align:center;padding:28px 14px;color:var(--t3);font-size:13px;}
+/* Toast */
+.toast{position:fixed;bottom:22px;right:22px;z-index:1000;padding:9px 15px;border-radius:var(--r);font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;transform:translateY(55px);opacity:0;transition:all 0.25s var(--ease);pointer-events:none;max-width:280px;}
+.toast.on{transform:translateY(0);opacity:1;}
+.toast.ok{background:var(--s2);border:1px solid rgba(16,185,129,0.35);color:#34d399;}
+.toast.fail{background:var(--s2);border:1px solid rgba(239,68,68,0.35);color:#f87171;}
+.toast.info{background:var(--s2);border:1px solid rgba(99,102,241,0.3);color:#818cf8;}
+/* Err */
+.estrip{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:var(--r2);padding:7px 10px;font-size:12px;color:#f87171;display:none;margin-bottom:7px;}
+.estrip.on{display:block;animation:fi 0.2s var(--ease);}
+/* Tip */
+.tip{display:flex;gap:6px;align-items:flex-start;padding:6px 9px;border-radius:var(--r2);background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.15);font-size:11.5px;color:#93c5fd;line-height:1.45;margin-top:5px;}
+.tipic{flex-shrink:0;}
+/* Divider */
+.div{height:1px;background:var(--b1);margin:12px 0;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo"><div class="logo-mark">✦</div>Ad<em>Craft</em> Pro</div>
+  <div class="topbar-mid">
+    <div class="ai-pill" id="aPill" onclick="openModal('aiMod')">
+      <div class="dot"></div>
+      <span id="aName">Claude</span> ▾
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="ibtn" id="themeTog" onclick="toggleTheme()" title="Toggle theme">☀</button>
+    <button class="ibtn" onclick="openDrawer()" title="History">🕐</button>
+    <button class="ibtn" onclick="openSettings()" title="Settings">⚙</button>
+  </div>
+</header>
+
+<!-- LEFT PANEL -->
+<aside class="lpanel">
+  <div class="lp-top">
+    <div class="tbar" id="tbar">
+      <button class="tchip save" onclick="savePreset()">＋ Save preset</button>
+      <button class="tchip" onclick="loadTpl('ecom')">🛍 Ecom</button>
+      <button class="tchip" onclick="loadTpl('saas')">💻 SaaS</button>
+      <button class="tchip" onclick="loadTpl('spiritual')">🪔 Spiritual</button>
+      <button class="tchip" onclick="loadTpl('fashion')">👗 Fashion</button>
+      <button class="tchip" onclick="loadTpl('food')">🍕 Food</button>
+      <button class="tchip" onclick="loadTpl('app')">📱 App</button>
+    </div>
+  </div>
+
+  <div class="lp-scroll" id="lpScroll">
+
+    <!-- PRODUCT -->
+    <div class="fsec">
+      <div class="fsec-title">Product <span></span></div>
+      <div class="frow">
+        <div class="field"><label for="fN">Name <em>*</em></label><input type="text" id="fN" placeholder="e.g. Nike Air Max"></div>
+        <div class="field"><label for="fC">Category <em>*</em></label><input type="text" id="fC" placeholder="Footwear, SaaS…"></div>
+      </div>
+      <div class="field">
+        <label for="fU">Product URL</label>
+        <div class="url-wrap">
+          <input type="url" id="fU" placeholder="https://…" oninput="onUrlTyped()">
+          <button class="prefill-btn" id="pfBtn" onclick="prefill()" disabled>AI Fill</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="fCr">Creative URL or Description</label>
+        <input type="text" id="fCr" placeholder="https://… or describe your visual">
+        <div class="tip"><span class="tipic">💡</span>Paste a direct image URL (jpg/png) for best results. Drive/Figma/Dropbox links can't be read — describe the visual instead (e.g. "woman using laptop, bright colors").</div>
+      </div>
+      <div class="field"><label for="fUS">Key USP <em>*</em></label><input type="text" id="fUS" placeholder="What makes this product special?"></div>
+      <div class="field"><label for="fB">Benefits (one per line)</label><textarea id="fB" placeholder="Benefit 1&#10;Benefit 2&#10;Benefit 3"></textarea></div>
+      <div class="frow">
+        <div class="field"><label for="fP">Price / Offer</label><input type="text" id="fP" placeholder="₹999 (50% OFF)"></div>
+        <div class="field"><label for="fA">Audience</label><input type="text" id="fA" placeholder="Women 25-40, India"></div>
+      </div>
+    </div>
+
+    <div class="div"></div>
+
+    <!-- CAMPAIGN -->
+    <div class="fsec" style="padding-top:0;">
+      <div class="fsec-title">Campaign <span></span></div>
+      <div class="frow">
+        <div class="field"><label for="fPl">Platform</label>
+          <select id="fPl">
+            <option value="meta">Meta (FB+IG)</option>
+            <option value="instagram">Instagram</option>
+            <option value="facebook">Facebook</option>
+            <option value="google">Google Ads</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="tiktok">TikTok</option>
+          </select>
+        </div>
+        <div class="field"><label for="fOb">Objective</label>
+          <select id="fOb">
+            <option value="conversions">Conversions</option>
+            <option value="traffic">Traffic</option>
+            <option value="leads">Lead Gen</option>
+            <option value="awareness">Awareness</option>
+            <option value="engagement">Engagement</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="field"><label for="fLg">Language</label>
+          <select id="fLg">
+            <option value="hinglish">Hinglish</option>
+            <option value="english">English</option>
+            <option value="hindi">Hindi</option>
+            <option value="formal">Formal EN</option>
+          </select>
+        </div>
+        <div class="field"><label for="fCTA">Meta CTA Button</label>
+          <select id="fCTA">
+            <option>Shop Now</option><option>Learn More</option><option>Sign Up</option>
+            <option>Get Offer</option><option>Book Now</option><option>Download</option>
+            <option>Contact Us</option><option>Watch More</option><option>Apply Now</option>
+            <option>Get Quote</option><option>Subscribe</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="field"><label for="fBV">Brand Voice</label><input type="text" id="fBV" placeholder="e.g. Playful, Premium…"></div>
+        <div class="field"><label for="fLen">Primary Text Length</label>
+          <select id="fLen">
+            <option value="short">Short (50-100w)</option>
+            <option value="medium" selected>Medium (150-250w)</option>
+            <option value="long">Long (300-500w)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label for="fPe">Buyer Persona</label>
+        <select id="fPe">
+          <option value="">— None / General —</option>
+          <option value="young_professional">Young Professional (22-32, ambitious, urban)</option>
+          <option value="homemaker">Homemaker / Parent (30-45, family-focused)</option>
+          <option value="student">College Student (18-24, budget-conscious)</option>
+          <option value="entrepreneur">Entrepreneur / Business Owner</option>
+          <option value="fitness_enthusiast">Fitness Enthusiast / Health-conscious</option>
+          <option value="luxury_buyer">Luxury Buyer (affluent, quality-driven)</option>
+          <option value="tech_savvy">Tech-savvy Early Adopter</option>
+          <option value="senior">Senior / 50+ (comfort, trust-seeking)</option>
+          <option value="small_business">Small Business Owner (ROI-focused)</option>
+          <option value="millennial_mom">Millennial Mom (convenience, safety)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="div"></div>
+
+    <!-- TONE SLOTS -->
+    <div class="fsec" style="padding-top:0;">
+      <div class="fsec-title">Variants &amp; Tones <span></span></div>
+      <div class="tone-builder">
+        <div class="tb-head">
+          <span>One tone per variant</span>
+          <div style="display:flex;gap:5px;align-items:center;">
+            <button class="abtn" onclick="chgVc(-1)">−</button>
+            <span id="vcLabel" style="font-size:12px;color:var(--p2);font-weight:700;">3</span>
+            <button class="abtn" onclick="chgVc(1)">+</button>
+          </div>
+        </div>
+        <div class="tb-slots" id="tSlots"></div>
+      </div>
+      <div class="field"><label for="fEx">Extra Instructions</label><textarea id="fEx" style="min-height:56px" placeholder="Specific angles, mentions, emojis to use…"></textarea></div>
+    </div>
+
+  </div><!-- /lp-scroll -->
+
+  <div class="lp-btm">
+    <div class="estrip" id="estrip"></div>
+    <button class="gen-btn" id="genBtn" onclick="generate()">
+      <span class="gtxt">✦ Generate Variants</span>
+      <div class="gsp"></div>
+    </button>
+  </div>
+</aside>
+
+<!-- RIGHT PANEL -->
+<main class="rpanel">
+  <div class="rtbar" id="rtbar" style="display:none;">
+    <div class="rtbar-l">
+      <div class="ol" id="oLabel">Variants</div>
+      <div class="vbadge" id="vBadge">0</div>
+    </div>
+    <div class="rtbar-r">
+      <div class="vtog">
+        <button class="vt on" onclick="setV('compact',this)">Compact</button>
+        <button class="vt" onclick="setV('detailed',this)">Detailed</button>
+      </div>
+      <button class="tbar-btn" onclick="copyAll()">📋 All</button>
+      <button class="tbar-btn" onclick="dlTxt()">⬇ Export</button>
+      <button class="tbar-btn prim" onclick="generate()">↻ Regen</button>
+    </div>
+  </div>
+
+  <!-- Empty -->
+  <div class="empty" id="emptyDiv">
+    <div class="empty-ico">✦</div>
+    <div class="empty-h">Ready to generate</div>
+    <div class="empty-p">Fill in product details, assign tones to variants, hit Generate.</div>
+    <div class="cklist">
+      <div class="cki" id="ck0"><div class="ckd"></div>Product name</div>
+      <div class="cki" id="ck1"><div class="ckd"></div>Category</div>
+      <div class="cki" id="ck2"><div class="ckd"></div>Key USP</div>
+      <div class="cki done" id="ck3"><div class="ckd" style="background:var(--ok);box-shadow:0 0 5px rgba(16,185,129,0.4)"></div>Tones assigned ✓</div>
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div class="ozone" id="oZone" style="display:none;">
+    <div id="vGrid"></div>
+  </div>
+</main>
+</div><!-- /shell -->
+
+<!-- AI MODAL -->
+<div class="ov" id="aiMod" onclick="bgClose(event,'aiMod')">
+  <div class="modal">
+    <div class="mhd"><div class="mtitle">AI Provider</div><button class="mx" onclick="closeModal('aiMod')">✕</button></div>
+    <div class="mbody">
+      <div class="ai-cards">
+        <div class="aic sel" data-p="claude" onclick="pickAI(this)"><div class="ai-ic">🤖</div><div class="ai-nm">Claude</div><div class="ai-sb">Anthropic</div></div>
+        <div class="aic" data-p="gemini" onclick="pickAI(this)"><div class="ai-ic">💎</div><div class="ai-nm">Gemini</div><div class="ai-sb">Google</div></div>
+        <div class="aic" data-p="groq" onclick="pickAI(this)"><div class="ai-ic">⚡</div><div class="ai-nm">Groq</div><div class="ai-sb">Fastest</div></div>
+      </div>
+      <div id="cr" style="display:block;">
+        <div class="field"><label>Claude API Key</label>
+          <div class="kf"><input type="password" id="kC" placeholder="sk-ant-…" oninput="sk('claude',this.value)"><button class="keye" onclick="tkv('kC',this)">👁</button></div>
+        </div>
+        <div class="tip" style="margin-top:6px;"><span class="tipic">🤖</span>Get a free key at <strong>console.anthropic.com</strong> — uses claude-3-haiku (fast &amp; affordable).</div>
+      </div>
+      <div id="gr" style="display:none;">
+        <div class="field"><label>Gemini API Key</label>
+          <div class="kf"><input type="password" id="kG" placeholder="AIza…" oninput="sk('gemini',this.value)"><button class="keye" onclick="tkv('kG',this)">👁</button></div>
+        </div>
+        <div class="tip" style="margin-top:6px;"><span class="tipic">💎</span>Free key at <strong>aistudio.google.com</strong> — no billing needed for free tier.</div>
+      </div>
+      <div id="qr" style="display:none;">
+        <div class="field"><label>Groq API Key</label>
+          <div class="kf"><input type="password" id="kQ" placeholder="gsk_…" oninput="sk('groq',this.value)"><button class="keye" onclick="tkv('kQ',this)">👁</button></div>
+        </div>
+        <div class="tip" style="margin-top:6px;"><span class="tipic">⚡</span>Free key at <strong>console.groq.com</strong> — LLaMA 3.3 70B, ultra-fast.</div>
+      </div>
+      <button class="gen-btn" style="margin-top:10px;" onclick="closeModal('aiMod')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="ov" id="setMod" onclick="bgClose(event,'setMod')">
+  <div class="modal">
+    <div class="mhd"><div class="mtitle">⚙ Settings</div><button class="mx" onclick="closeModal('setMod')">✕</button></div>
+    <div class="mbody">
+      <div class="fsec-title" style="margin-bottom:8px;">Saved Presets <span></span></div>
+      <div id="pList" style="margin-bottom:12px;"></div>
+      <div class="div" style="margin:10px 0;"></div>
+      <div class="fsec-title" style="margin-bottom:8px;">Data <span></span></div>
+      <button class="tbar-btn" style="width:100%;justify-content:center;margin-bottom:7px;" onclick="expHist()">📤 Export History JSON</button>
+      <button class="tbar-btn" style="width:100%;justify-content:center;color:var(--err);border-color:rgba(239,68,68,0.25);" onclick="nuke()">🗑 Clear All Data</button>
+      <div style="margin-top:14px;font-size:11px;color:var(--t3);text-align:center;line-height:1.7;">AdCraft Pro v3.1 · Claude · Gemini · Groq<br>Built for performance marketers</div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY DRAWER -->
+<div class="hdrawer-ov" id="histOv">
+  <div class="hbg" onclick="closeDrawer()"></div>
+  <div class="hdrawer">
+    <div class="drhd"><div class="mtitle">🕐 History</div><button class="mx" onclick="closeDrawer()">✕</button></div>
+    <div class="drbd" id="histBd"></div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="veil" id="veil">
+  <div class="lring"></div>
+  <div class="lt" id="lt">Generating…</div>
+  <div class="ls" id="ls">Crafting high-converting copy</div>
+  <div class="lpw"><div class="lp" id="lpBar"></div></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="tst"></div>
+
+<script>
+const S={provider:'claude',vc:3,last:null,view:'compact',slotTones:[],keys:JSON.parse(localStorage.getItem('ac3k')||'{}'),hist:JSON.parse(localStorage.getItem('ac3h')||'[]'),presets:JSON.parse(localStorage.getItem('ac3p')||'{}')};
+const TONES=[
+  {v:'emotion',l:'😢 Emotion-led'},{v:'urgency',l:'⏱ Urgency'},{v:'trust',l:'🛡 Trust+Proof'},
+  {v:'problem',l:'🎯 Problem→Solution'},{v:'curiosity',l:'🤔 Curiosity Hook'},{v:'educational',l:'📚 Educational'},
+  {v:'testimonial',l:'💬 Testimonial'},{v:'story',l:'📖 Storytelling'},{v:'offer',l:'💰 Offer-led'},{v:'luxury',l:'💎 Luxury'},
+];
+const TONE_DESC={
+  emotion:'Tap into deep emotions — fear, desire, hope. Make the reader feel before they think.',
+  urgency:'Create FOMO. Limited stock, time-sensitive. Force the decision NOW.',
+  trust:'Credibility: reviews, numbers, guarantees, brand authority.',
+  problem:'Sharp pain point, then position the product as the perfect fix.',
+  curiosity:'Surprising, counterintuitive opening that forces them to keep reading.',
+  educational:'Teach something valuable. Position brand as category expert.',
+  testimonial:'Write as if a satisfied customer sharing their real transformation.',
+  story:'Short vivid narrative. Pull them into a scene before the product reveal.',
+  offer:'Lead with the deal. Numbers and savings front and center.',
+  luxury:'Aspirational, refined. Exclusivity, craftsmanship, prestige.',
+};
+const SLOT_C=['s0','s1','s2','s3','s4b','s5'];
+const CARD_C=['c0','c1','c2','c3','c4','c5'];
+const NUM_BG=['rgba(99,102,241,0.2)','rgba(16,185,129,0.15)','rgba(245,158,11,0.15)','rgba(239,68,68,0.15)','rgba(59,130,246,0.15)','rgba(168,85,247,0.15)'];
+const NUM_FG=['#818cf8','#34d399','#fbbf24','#f87171','#60a5fa','#c084fc'];
+const ACC_C=['#6366f1','#10b981','#f59e0b','#ef4444','#3b82f6','#a855f7'];
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{
+  const def=['emotion','urgency','trust','problem','curiosity','story'];
+  S.slotTones=def.slice(0,S.vc);
+  renderSlots();loadKeys();renderHist();
+  ['fN','fC','fUS'].forEach(id=>document.getElementById(id).addEventListener('input',upCk));
+  upCk();
+});
+
+function g(id){return document.getElementById(id)?.value?.trim()||'';}
+function eh(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// CHECKLIST
+function upCk(){
+  const m=[g('fN'),g('fC'),g('fUS')];
+  m.forEach((v,i)=>setCk('ck'+i,!!v));
+}
+function setCk(id,ok){
+  const el=document.getElementById(id);if(!el)return;
+  el.classList.toggle('done',ok);
+  const d=el.querySelector('.ckd');
+  if(d){d.style.background=ok?'var(--ok)':'';d.style.boxShadow=ok?'0 0 5px rgba(16,185,129,0.4)':'';}
+}
+
+// TONE SLOTS
+function renderSlots(){
+  const c=document.getElementById('tSlots');c.innerHTML='';
+  for(let i=0;i<S.vc;i++){
+    const sv=S.slotTones[i]||TONES[i%TONES.length].v;
+    const d=document.createElement('div');d.className='tslot';
+    d.innerHTML=`<div class="snum ${SLOT_C[i%6]}">${i+1}</div><select onchange="S.slotTones[${i}]=this.value">${TONES.map(t=>`<option value="${t.v}"${t.v===sv?' selected':''}>${t.l}</option>`).join('')}</select>`;
+    c.appendChild(d);
+  }
+  document.getElementById('vcLabel').textContent=S.vc;
+}
+function chgVc(d){S.vc=Math.min(6,Math.max(1,S.vc+d));if(S.slotTones.length<S.vc)S.slotTones.push(TONES[S.vc-1].v);renderSlots();}
+
+// AI
+function pickAI(card){
+  document.querySelectorAll('.aic').forEach(c=>c.classList.remove('sel'));card.classList.add('sel');
+  S.provider=card.dataset.p;
+  ['cr','gr','qr'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById({claude:'cr',gemini:'gr',groq:'qr'}[S.provider]).style.display='block';
+  document.getElementById('aName').textContent={claude:'Claude',gemini:'Gemini',groq:'Groq'}[S.provider];
+}
+function tkv(id,btn){const el=document.getElementById(id);el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁':'🙈';}
+function sk(p,v){S.keys[p]=v;localStorage.setItem('ac3k',JSON.stringify(S.keys));}
+function loadKeys(){if(S.keys.claude)document.getElementById('kC').value=S.keys.claude;if(S.keys.gemini)document.getElementById('kG').value=S.keys.gemini;if(S.keys.groq)document.getElementById('kQ').value=S.keys.groq;}
+
+// PREFILL
+function onUrlTyped(){const u=g('fU');document.getElementById('pfBtn').disabled=u.length<8;}
+async function fetchUrl(url){
+  // Try CORS proxies in order
+  const proxies=[
+    u=>`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+    u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
+  ];
+  for(const mkProxy of proxies){
+    try{
+      const r=await fetch(mkProxy(url),{signal:AbortSignal.timeout(8000)});
+      if(!r.ok)continue;
+      const ct=r.headers.get('content-type')||'';
+      let text;
+      if(ct.includes('json')){const j=await r.json();text=j.contents||'';}
+      else{text=await r.text();}
+      // Strip HTML tags, collapse whitespace, limit length
+      return text.replace(/<style[\s\S]*?<\/style>/gi,'').replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,4000);
+    }catch(e){continue;}
+  }
+  return null;
+}
+async function prefill(){
+  const url=g('fU');if(!url){toast('Paste a product URL first','fail');return;}
+  const btn=document.getElementById('pfBtn');btn.textContent='…';btn.disabled=true;
+  try{
+    toast('Fetching page…','info');
+    const pageText=await fetchUrl(url);
+    const prompt=pageText
+      ?`Extract from this product page: productName, category, usp, benefits(array max 6), targetAudience, priceHint.\n\nPAGE CONTENT:\n${pageText}\n\nReturn ONLY valid JSON, no markdown.`
+      :`Analyse this product URL and extract productName, category, usp, benefits(array max 6), targetAudience, priceHint. URL: ${url}\nReturn ONLY valid JSON, no markdown.`;
+    const raw=await callAI(prompt,800);
+    const d=parseJ(raw);
+    if(d.productName)document.getElementById('fN').value=d.productName;
+    if(d.category)document.getElementById('fC').value=d.category;
+    if(d.usp)document.getElementById('fUS').value=d.usp;
+    if(d.benefits)document.getElementById('fB').value=Array.isArray(d.benefits)?d.benefits.join('\n'):d.benefits;
+    if(d.targetAudience)document.getElementById('fA').value=d.targetAudience;
+    if(d.priceHint)document.getElementById('fP').value=d.priceHint;
+    upCk();toast('Fields prefilled from page!','ok');
+  }catch(e){toast('Prefill failed: '+e.message,'fail');}
+  finally{btn.textContent='AI Fill';btn.disabled=false;}
+}
+
+// TEMPLATES
+const TPLS={
+  ecom:{fC:'E-commerce',fOb:'conversions',fLg:'english',fBV:'Friendly, benefit-focused'},
+  saas:{fC:'SaaS / Software',fOb:'leads',fLg:'formal',fBV:'Professional, ROI-focused'},
+  spiritual:{fC:'Spiritual / Wellness',fOb:'conversions',fLg:'hinglish',fBV:'Devotional, warm, sacred'},
+  fashion:{fC:'Fashion / Apparel',fOb:'conversions',fLg:'english',fBV:'Trendy, aspirational'},
+  food:{fC:'Food & Beverage',fOb:'conversions',fLg:'english',fBV:'Mouth-watering, fun'},
+  app:{fC:'Mobile App',fOb:'conversions',fLg:'english',fBV:'Casual, benefit-driven'},
+};
+function loadTpl(k){const t=TPLS[k];if(!t)return;Object.entries(t).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v;});toast(k+' template loaded','info');}
+function savePreset(){
+  const name=prompt('Preset name?');if(!name)return;
+  const data={};['fN','fC','fU','fUS','fB','fP','fA','fBV','fPl','fOb','fLg','fCTA'].forEach(id=>{const el=document.getElementById(id);if(el)data[id]=el.value;});
+  S.presets[name]=data;localStorage.setItem('ac3p',JSON.stringify(S.presets));toast('"'+name+'" saved','ok');
+}
+function loadPreset(name){
+  const d=S.presets[name];if(!d)return;
+  Object.entries(d).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v;});
+  upCk();closeModal('setMod');toast('"'+name+'" loaded','ok');
+}
+function delPreset(name){delete S.presets[name];localStorage.setItem('ac3p',JSON.stringify(S.presets));renderPresets();}
+function renderPresets(){
+  const el=document.getElementById('pList');if(!el)return;
+  const ks=Object.keys(S.presets);
+  if(!ks.length){el.innerHTML='<div style="color:var(--t3);font-size:12px;">No saved presets</div>';return;}
+  el.innerHTML=ks.map(k=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 9px;border-radius:6px;background:var(--s2);border:1px solid var(--b1);margin-bottom:4px;"><span style="font-size:12px;font-weight:600;">${eh(k)}</span><div style="display:flex;gap:4px;"><button class="abtn" onclick="loadPreset('${eh(k)}')">Load</button><button class="abtn" style="color:var(--err);" onclick="delPreset('${eh(k)}')">Del</button></div></div>`).join('');
+}
+
+// AI CALLS
+async function callAI(prompt,mt=5000){
+  if(S.provider==='claude')return callClaude(prompt,mt);
+  if(S.provider==='gemini')return callGemini(prompt);
+  if(S.provider==='groq')return callGroq(prompt);
+  throw new Error('No provider');
+}
+async function callClaude(p,mt){
+  const k=S.keys.claude;if(!k)throw new Error('Claude API key needed — click the AI provider pill above');
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:mt,messages:[{role:'user',content:p}]})});
+  const d=await r.json();if(d.error)throw new Error(d.error.message);return d.content?.[0]?.text||'';
+}
+async function callGemini(p){
+  const k=S.keys.gemini;if(!k)throw new Error('Gemini key needed — click AI provider above');
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${k}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:p}]}]})});
+  const d=await r.json();if(d.error)throw new Error(d.error.message);return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+async function callGroq(p){
+  const k=S.keys.groq;if(!k)throw new Error('Groq key needed — click AI provider above');
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:p}],max_tokens:5000,temperature:0.85})});
+  const d=await r.json();if(d.error)throw new Error(d.error.message||JSON.stringify(d.error));return d.choices?.[0]?.message?.content||'';
+}
+function sanitizeJson(s){
+  // Escape raw control characters that appear inside JSON string values
+  let r='',inStr=false,esc=false;
+  for(let i=0;i<s.length;i++){
+    const ch=s[i],code=s.charCodeAt(i);
+    if(esc){r+=ch;esc=false;continue;}
+    if(ch==='\\'){r+=ch;esc=true;continue;}
+    if(ch==='"'){inStr=!inStr;r+=ch;continue;}
+    if(inStr&&code<0x20){r+='\\u'+code.toString(16).padStart(4,'0');}
+    else{r+=ch;}
+  }
+  return r;
+}
+function parseJ(raw){
+  let c=raw.replace(/```json\s*|```\s*/g,'').trim();
+  // Extract the JSON object/array if extra text is present
+  const m=c.match(/\{[\s\S]*\}/);if(m)c=m[0];
+  try{return JSON.parse(c);}
+  catch(e){
+    try{return JSON.parse(sanitizeJson(c));}
+    catch(e2){throw new Error('Could not parse AI response — try regenerating');}
+  }
+}
+
+const PERSONA_DESC={
+  young_professional:'Young professional (22-32, urban, career-driven, aspirational, time-poor). Use achievement, status, and efficiency angles.',
+  homemaker:'Homemaker/Parent (30-45, family-first). Use safety, convenience, value-for-money, and family wellbeing angles.',
+  student:'College student (18-24, budget-conscious, trend-sensitive). Use FOMO, social proof, affordability, and fun angles.',
+  entrepreneur:'Entrepreneur/Business owner (results-driven, ROI-focused). Use productivity, growth, competitive edge angles.',
+  fitness_enthusiast:'Fitness enthusiast (health-obsessed, goal-driven). Use transformation, performance, and discipline angles.',
+  luxury_buyer:'Luxury buyer (affluent, quality-over-price). Use exclusivity, craftsmanship, prestige, and refinement angles.',
+  tech_savvy:'Tech-savvy early adopter (innovation-hungry, feature-conscious). Use cutting-edge, superior-tech, and "first-mover" angles.',
+  senior:'Senior 50+ (trust-seeking, comfort-focused). Use reliability, simplicity, safety, and support angles.',
+  small_business:'Small business owner (tight budget, big ambitions). Use ROI, time-saving, and competitive advantage angles.',
+  millennial_mom:'Millennial mom (convenience-first, safety-conscious). Use ease, trusted by moms, child-safety, and time-saving angles.',
+};
+
+// PROMPT
+function buildPrompt(){
+  const slots=[...document.querySelectorAll('#tSlots select')].map(s=>s.value);
+  const tLines=slots.map((t,i)=>`Variant ${i+1}: ${TONE_DESC[t]||t}`).join('\n');
+  const lgMap={hinglish:'Natural Hinglish mix',english:'Warm casual English',hindi:'Hindi in Roman script',formal:'Polished professional English'};
+  const plMap={meta:'Meta Ads. Headline ≤40 chars ideal. Hook in first 2 lines. Description ≤125 chars.',instagram:'Instagram Ads. Visual-first. Hook first line.',facebook:'Facebook Ads.',google:'Google Search Ads. Headlines ≤30 chars. Descriptions ≤90 chars.',linkedin:'LinkedIn Ads. Professional B2B.',tiktok:'TikTok Ads. Caption ≤150 chars. Hook in 3 words.'};
+  const persona=document.getElementById('fPe')?.value;
+  const personaLine=persona&&PERSONA_DESC[persona]?`- Buyer Persona: ${PERSONA_DESC[persona]}`:'';
+  return `You are a world-class paid-media copywriter. Write ads that stop the scroll and drive conversions.
+
+PRODUCT:
+- Name: ${g('fN')||'Not specified'}
+- Category: ${g('fC')||'Not specified'}
+- URL: ${g('fU')||'Not provided'}
+- Creative Direction: ${g('fCr')||'Not provided'}
+- USP: ${g('fUS')||'Not specified'}
+- Benefits: ${g('fB')||'Not specified'}
+- Price/Offer: ${g('fP')||'Not specified'}
+- Audience: ${g('fA')||'Not specified'}
+- Brand Voice: ${g('fBV')||'Not specified'}
+${personaLine}
+
+CAMPAIGN:
+- Platform: ${plMap[document.getElementById('fPl')?.value]||plMap.meta}
+- Objective: ${document.getElementById('fOb')?.value}
+- Language: ${lgMap[document.getElementById('fLg')?.value]||lgMap.english}
+- CTA Button: ${document.getElementById('fCTA')?.value}
+- Extra: ${g('fEx')||'None'}
+
+TONE PER VARIANT:
+${tLines}
+
+RULES:
+1. Generate exactly ${S.vc} variants, each distinctly different in angle and structure.
+2. Primary text length: ${{short:'Short — 50-100 words. Punchy, scannable. 2-4 lines max.',medium:'Medium — 150-250 words. Hook + story + CTA. Use line breaks.',long:'Long-form — 300-500 words. Deep hook, storytelling, objection handling, strong CTA.'}[document.getElementById('fLen')?.value||'medium']}
+3. Emojis: Use 2-4 emojis naturally in primaryText (not in headline). Place them at line breaks or to highlight key benefits. Do NOT overuse — each emoji must earn its place.
+4. Headline: Benefit-first, punchy. ≤40 chars for Meta. No emojis in headline.
+5. Description: ≤125 chars. 1 emoji max.
+6. cta must match: "${g('fCTA')}"
+7. whyItWorks: 1-sentence psychological trigger explanation.
+8. Output ONLY valid JSON, no markdown.
+
+{"product":"...","platform":"...","variants":[{"variantNumber":1,"toneName":"2-3 word name","toneKey":"emotion","strategy":"One sentence","headline":"...","primaryText":"...","description":"...","cta":"${g('fCTA')}","whyItWorks":"..."}]}`;
+}
+
+// GENERATE
+async function generate(){
+  const name=g('fN'),usp=g('fUS');
+  const es=document.getElementById('estrip');es.classList.remove('on');
+  if(!name){es.textContent='⚠ Product name required';es.classList.add('on');document.getElementById('fN').focus();return;}
+  if(!usp){es.textContent='⚠ Key USP required';es.classList.add('on');document.getElementById('fUS').focus();return;}
+  const btn=document.getElementById('genBtn');btn.disabled=true;btn.classList.add('busy');
+  const msgs=[{t:'Analysing brief…',s:'Reading your product and audience'},{t:'Mapping psychology…',s:'Finding triggers that move buyers'},{t:'Writing variants…',s:'Crafting headlines and primary text'},{t:'Finalising copy…',s:'Checking limits and CTA alignment'}];
+  let mi=0;
+  const veil=document.getElementById('veil'),bar=document.getElementById('lpBar');
+  veil.classList.add('on');bar.style.width='0%';
+  document.getElementById('lt').textContent=msgs[0].t;document.getElementById('ls').textContent=msgs[0].s;
+  const intv=setInterval(()=>{mi=Math.min(mi+1,msgs.length-1);document.getElementById('lt').textContent=msgs[mi].t;document.getElementById('ls').textContent=msgs[mi].s;bar.style.width=((mi+1)/msgs.length*90)+'%';},1700);
+  try{
+    const raw=await callAI(buildPrompt());
+    clearInterval(intv);bar.style.width='100%';
+    const data=parseJ(raw);S.last=data;
+    saveHist({product:name,platform:g('fPl'),provider:S.provider,variants:data.variants?.length||0,ts:new Date().toLocaleString(),data});
+    await new Promise(r=>setTimeout(r,280));
+    renderOut(data);
+    toast('✦ '+data.variants?.length+' variants ready','ok');
+  }catch(e){
+    clearInterval(intv);
+    es.textContent='⚠ '+e.message;es.classList.add('on');
+    toast(e.message,'fail');
+  }finally{
+    clearInterval(intv);btn.disabled=false;btn.classList.remove('busy');veil.classList.remove('on');bar.style.width='0%';
+  }
+}
+
+// RENDER
+function cStat(len,soft,hard){
+  if(len<=soft)return{pct:len/hard*100,col:'#10b981',lbl:`${len}/${hard}`};
+  if(len<=hard)return{pct:len/hard*100,col:'#f59e0b',lbl:`${len}/${hard} ⚠`};
+  return{pct:100,col:'#ef4444',lbl:`${len}/${hard} ✕`};
+}
+const LIMITS={headline:{soft:35,hard:40},primaryText:{soft:250,hard:2200},description:{soft:100,hard:125}};
+
+function mfHtml(label,text,lk,acol){
+  const lim=LIMITS[lk]||{soft:200,hard:300};
+  const s=cStat(text.length,lim.soft,lim.hard);
+  const isHl=lk==='headline';
+  return `<div class="mf${isHl?' hl':''}">
+    <div class="mf-hd">
+      <div class="mf-lbl"><span class="lbl-dot" style="background:${acol};"></span>${label}</div>
+      <div class="mf-right">
+        <div class="cbar-w"><div class="cbar" style="width:${Math.min(s.pct,100)}%;background-color:${s.col};"></div></div>
+        <span class="clbl" style="color:${s.col};">${s.lbl}</span>
+        <button class="mf-cp" onclick="cpF(${JSON.stringify(text)},this)">⎘</button>
+      </div>
+    </div>
+    <div class="mf-body">${eh(text)}</div>
+  </div>`;
+}
+
+function renderOut(data){
+  const grid=document.getElementById('vGrid');grid.innerHTML='';
+  const wrap=document.createElement('div');wrap.className=S.view==='compact'?'cgrid':'dlist';
+  (data.variants||[]).forEach((v,i)=>{
+    const cc=CARD_C[i%6],ac=ACC_C[i%6];
+    const hlOk=v.headline?.length<=40,descOk=v.description?.length<=125;
+    const card=document.createElement('div');card.className=`vc ${cc}`;card.style.animationDelay=(i*55)+'ms';
+    card.innerHTML=`
+      <div class="vc-head">
+        <div style="display:flex;align-items:flex-start;gap:9px;flex:1;min-width:0;">
+          <div class="vnum" style="background:${NUM_BG[i%6]};color:${NUM_FG[i%6]};">${i+1}</div>
+          <div class="vinfo">
+            <div class="vtname">${eh(v.toneName||'Variant '+(i+1))}</div>
+            <div class="vstrat">${eh(v.strategy||'')}</div>
+          </div>
+        </div>
+        <div class="vact">
+          <button class="abtn" onclick="cpVall(${i})">Copy All</button>
+        </div>
+      </div>
+      <div class="mfs">
+        ${mfHtml('HEADLINE',v.headline||'','headline',ac)}
+        ${mfHtml('PRIMARY TEXT',v.primaryText||'','primaryText',ac)}
+        ${mfHtml('DESCRIPTION',v.description||'','description',ac)}
+        <div class="mf">
+          <div class="mf-hd">
+            <div class="mf-lbl"><span class="lbl-dot" style="background:#1877f2;"></span>CTA BUTTON</div>
+            <button class="mf-cp" onclick="cpF(${JSON.stringify(v.cta||'')},this)">⎘</button>
+          </div>
+          <div class="mf-body"><div class="cta-badge">👆 ${eh(v.cta||'Shop Now')}</div></div>
+        </div>
+      </div>
+      ${v.whyItWorks?`<div class="why"><div class="why-lbl">Why it works</div>${eh(v.whyItWorks)}</div>`:''}
+      <div class="vc-ft">
+        <div class="srow">
+          <span class="sp ${hlOk?'sp-ok':'sp-e'}">HL ${hlOk?'✓':'over'}</span>
+          <span class="sp ${descOk?'sp-ok':'sp-w'}">Desc ${descOk?'✓':'over'}</span>
+          <span class="sp sp-i">${eh(v.toneKey||'')}</span>
+        </div>
+        <button class="meta-cp-btn" id="mcb${i}" onclick="cpMeta(${i})">
+          <span style="font-size:13px;font-weight:900;font-style:italic;">f</span> Copy for Meta
+        </button>
+      </div>`;
+    wrap.appendChild(card);
+  });
+  grid.appendChild(wrap);
+  document.getElementById('emptyDiv').style.display='none';
+  document.getElementById('oZone').style.display='block';
+  document.getElementById('rtbar').style.display='flex';
+  document.getElementById('oLabel').textContent=data.product||'Variants';
+  document.getElementById('vBadge').textContent=(data.variants?.length||0)+' variants';
+  document.querySelector('.rpanel').scrollTop=0;
+}
+
+function setV(v,btn){S.view=v;document.querySelectorAll('.vt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');if(S.last)renderOut(S.last);}
+
+// COPY
+function cpF(txt,btn){navigator.clipboard.writeText(txt).then(()=>{if(btn){btn.textContent='✓';btn.classList.add('done');setTimeout(()=>{btn.textContent='⎘';btn.classList.remove('done');},1800);}});}
+function cpVall(i){
+  const v=S.last?.variants?.[i];if(!v)return;
+  navigator.clipboard.writeText(`HEADLINE:\n${v.headline}\n\nPRIMARY TEXT:\n${v.primaryText}\n\nDESCRIPTION:\n${v.description}\n\nCTA: ${v.cta}`);
+  toast('Variant '+(i+1)+' copied','ok');
+}
+function cpMeta(i){
+  const v=S.last?.variants?.[i];if(!v)return;
+  // Format: exactly how you'd paste into Meta Ads Manager — HL, then PT, then Desc
+  navigator.clipboard.writeText(`${v.headline}\n\n${v.primaryText}\n\n${v.description}`);
+  const btn=document.getElementById('mcb'+i);
+  if(btn){btn.innerHTML='<span>✓</span> Copied!';btn.classList.add('done');setTimeout(()=>{btn.innerHTML='<span style="font-size:13px;font-weight:900;font-style:italic;">f</span> Copy for Meta';btn.classList.remove('done');},2200);}
+  toast('Copied in Meta order (HL→PT→Desc)','ok');
+}
+function copyAll(){
+  if(!S.last?.variants)return;
+  let t=`AD VARIANTS — ${S.last.product||''}\n${'='.repeat(44)}\n\n`;
+  S.last.variants.forEach((v,i)=>{t+=`VARIANT ${i+1}: ${v.toneName}\n${v.strategy}\n\nHEADLINE: ${v.headline}\n\nPRIMARY TEXT:\n${v.primaryText}\n\nDESCRIPTION: ${v.description}\n\nCTA: ${v.cta}\n${v.whyItWorks?`\nWHY: ${v.whyItWorks}\n`:''}\n${'─'.repeat(44)}\n\n`;});
+  navigator.clipboard.writeText(t.trim());toast('All variants copied!','ok');
+}
+function dlTxt(){
+  if(!S.last)return;
+  let t=`AD COPY — ${S.last.product||''}\n${new Date().toLocaleString()}\n\n`;
+  S.last.variants?.forEach((v,i)=>{t+=`VARIANT ${i+1}: ${v.toneName}\nHEADLINE: ${v.headline}\n\nPRIMARY TEXT:\n${v.primaryText}\n\nDESCRIPTION: ${v.description}\n\nCTA: ${v.cta}\n\n`;});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([t],{type:'text/plain'})),download:`adcraft_${(S.last.product||'copy').replace(/\s+/g,'_')}.txt`});a.click();toast('Downloaded!','info');
+}
+
+// HISTORY
+function saveHist(item){S.hist.unshift({...item,id:Date.now()});if(S.hist.length>30)S.hist.pop();localStorage.setItem('ac3h',JSON.stringify(S.hist));renderHist();}
+function renderHist(){
+  const el=document.getElementById('histBd');if(!el)return;
+  if(!S.hist.length){el.innerHTML='<div class="hemp">No history yet</div>';return;}
+  el.innerHTML=S.hist.slice(0,20).map(h=>`<div class="hi" onclick="loadHist(${h.id})"><div class="hn">${eh(h.product)}</div><div class="hm">${h.platform} · ${h.variants}v · ${h.provider} · ${h.ts}</div></div>`).join('');
+}
+function loadHist(id){const h=S.hist.find(x=>x.id===id);if(!h?.data)return;S.last=h.data;renderOut(h.data);closeDrawer();toast('Loaded from history','info');}
+
+// MODALS & DRAWERS
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function bgClose(e,id){if(e.target===document.getElementById(id))closeModal(id);}
+function openSettings(){renderPresets();openModal('setMod');}
+function openDrawer(){document.getElementById('histOv').classList.add('open');renderHist();}
+function closeDrawer(){document.getElementById('histOv').classList.remove('open');}
+
+// DATA
+function expHist(){const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([JSON.stringify(S.hist,null,2)],{type:'application/json'})),download:'adcraft_history.json'});a.click();}
+function nuke(){if(!confirm('Delete all data?'))return;localStorage.clear();S.hist=[];S.keys={};S.presets={};document.getElementById('kC').value='';document.getElementById('kG').value='';document.getElementById('kQ').value='';renderHist();closeModal('setMod');toast('Cleared','info');}
+
+// TOAST
+let tT;
+function toast(msg,type='info'){const el=document.getElementById('tst');el.textContent=msg;el.className=`toast on ${type}`;clearTimeout(tT);tT=setTimeout(()=>el.classList.remove('on'),3000);}
+
+// THEME
+function getSystemTheme(){return window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);const btn=document.getElementById('themeTog');if(btn)btn.textContent=t==='dark'?'☀':'🌙';}
+function toggleTheme(){const cur=document.documentElement.getAttribute('data-theme')||getSystemTheme();const next=cur==='dark'?'light':'dark';localStorage.setItem('acTheme',next);applyTheme(next);}
+(function(){const saved=localStorage.getItem('acTheme');applyTheme(saved||getSystemTheme());window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',e=>{if(!localStorage.getItem('acTheme'))applyTheme(e.matches?'dark':'light');});})();
+</script>
+</body>
+</html>
