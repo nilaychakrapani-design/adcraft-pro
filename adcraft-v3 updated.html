@@ -841,7 +841,7 @@ CTA DISTRIBUTION: LEARN_MORE > INSTALL_MOBILE_APP > USE_APP`;
 function buildPrompt(){
   const slots=[...document.querySelectorAll('#tSlots select')].map(s=>s.value);
   const tLines=slots.map((t,i)=>`Variant ${i+1}: ${TONE_DESC[t]||t}`).join('\n');
-  const lgMap={hinglish:'Natural Hinglish mix',english:'Warm casual English',hindi:'Hindi in Roman script',formal:'Polished professional English'};
+  const lgMap={hinglish:'Hinglish — natural casual mix of Hindi words and English in Roman script only (e.g. "Aaj hi order karo! Ye product aapki life change kar dega"). NO Devanagari script.',english:'Warm casual English',hindi:'Pure Hindi in Devanagari script only (e.g. "आज ही ऑर्डर करें! यह उत्पाद आपकी जिंदगी बदल देगा"). NO Roman/English words.',formal:'Polished professional English'};
   const plMap={meta:'Meta Ads. Headline ≤40 chars ideal. Hook in first 2 lines. Description ≤125 chars.',instagram:'Instagram Ads. Visual-first. Hook first line.',facebook:'Facebook Ads.',google:'Google Search Ads. Headlines ≤30 chars. Descriptions ≤90 chars.',linkedin:'LinkedIn Ads. Professional B2B.',tiktok:'TikTok Ads. Caption ≤150 chars. Hook in 3 words.'};
   const persona=document.getElementById('fPe')?.value;
   const personaLine=persona&&PERSONA_DESC[persona]?`- Buyer Persona: ${PERSONA_DESC[persona]}`:'';
